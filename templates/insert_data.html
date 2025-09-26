@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="text-center mb-4">เพิ่มข้อมูลสินค้า</h1> 
+
+
+<div class="d-flex justify-content-center">
+  <form action="/submit" method="POST" enctype="multipart/form-data" 
+        class="mb-4 p-4 border rounded shadow-sm bg-light"
+        onsubmit="return validateForm()" 
+        style="max-width: 500px; width: 100%;">
+
+    <div class="mb-2">
+      <input type="text" name="CATALOG_Name" class="form-control" placeholder="ชื่อสินค้า" required>
+    </div>
+    <div class="mb-2">
+      <input type="text" name="CATALOG_Brand" class="form-control" placeholder="แบรนด์สินค้า" required>
+    </div>
+    <div class="mb-2">
+      <input type="text" name="CATALOG_Detail" class="form-control" placeholder="รายละเอียดสินค้า" required>
+    </div>
+    <div class="mb-2">
+      <input type="number" name="CATALOG_Price" class="form-control" placeholder="ราคาสินค้า" required>
+    </div>
+    
+    <div class="mb-2">
+      <select name="TYPE_FK" class="form-select">
+        <option value="1">เครื่องมือ</option>
+        <option value="2">หลอดไฟ</option>
+        <option value="3">อุปกรณ์ไฟฟ้า</option>
+      </select>
+    </div>
+    <div class="mb-2">
+      <input type="file" name="CATALOG_Image" id="CATALOG_Image" class="form-control" accept="image/*">
+    </div>
+    <button type="submit" class="btn btn-success w-100">เพิ่มสินค้า</button>
+  </form>
+</div> 
+
+
+<script>
+  function validateForm() {
+    const fileInput = document.getElementById('CATALOG_Image');
+    if (!fileInput.value) {
+      alert("กรุณาเลือกไฟล์รูปภาพก่อนส่งข้อมูล");
+      return false;  
+    }
+    return confirm("คุณต้องการเพิ่มข้อมูลนี้หรือไม่?");
+  }
+</script>
+
+<hr>
+
+<div class="row justify-content-center"> 
+  {% for m in catalog %}
+  <div class="col-md-3">
+    <div class="card mb-3 shadow-sm"> 
+      {% if m[4] %}
+      <img src="{{ m[4] }}" class="card-img-top" style="height:150px;object-fit:cover;">
+      {% endif %}
+
+      <div class="card-body text-center"> 
+        <h5 class="card-title">{{ m[2] }}</h5>
+        <p>Price: {{ m[3] }} | Brand: {{ m[6] }}</p>
+        <p>Detail: {{ m[5] }}</p>
+
+        <a href="/delete/{{ m[0] }}" class="btn btn-danger btn-sm">Delete</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

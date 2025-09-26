@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
+    <div class="text-center mb-4">
+      <i class="fas fa-user-circle fa-4x text-primary"></i>
+      <h2 class="mt-2">เข้าสู่ระบบ</h2>
+      <p class="text-muted">กรอกอีเมลและรหัสผ่านของคุณ</p>
+    </div>
+
+    <form>
+      <div class="mb-3">
+        <label for="email" class="form-label">อีเมล</label>
+        <input type="email" class="form-control" id="email" placeholder="name@example.com">
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">รหัสผ่าน</label>
+        <input type="password" class="form-control" id="password" placeholder="••••••••">
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="rememberMe">
+          <label class="form-check-label" for="rememberMe">จดจำฉัน</label>
+        </div>
+        <a href="#" class="text-decoration-none small text-primary">ลืมรหัสผ่าน?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">เข้าสู่ระบบ</button>
+    </form>
+
+    <hr class="my-4">
+
+    <div class="text-center">
+      <p class="small">ยังไม่มีบัญชี? 
+        <a href="#" class="text-decoration-none text-success fw-bold">สมัครสมาชิก</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">ตะกร้าสินค้า</h2>
+
+    <!-- ถ้าไม่มีสินค้า -->
+    {% if not cart_items %}
+    <div class="alert alert-info text-center">
+        ยังไม่มีสินค้าในตะกร้า <a href="/" class="alert-link">ไปเลือกสินค้า</a>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>ภาพสินค้า</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>จำนวน</th>
+                    <th>ราคา/ชิ้น</th>
+                    <th>ราคารวม</th>
+                    <th>ลบ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>
+                        {% if item.image %}
+                        <img src="{{ item.image }}" alt="{{ item.name }}" style="width:80px; height:80px; object-fit:cover;">
+                        {% else %}
+                        <span class="text-muted">ไม่มีภาพ</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>
+                        <form action="{{ url_for('update_cart', item_id=item.id) }}" method="POST" class="d-flex justify-content-center">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control text-center" style="width:70px;">
+                            <button type="submit" class="btn btn-sm btn-outline-success ms-2">อัปเดต</button>
+                        </form>
+                    </td>
+                    <td>{{ item.price }} ฿</td>
+                    <td>{{ item.price * item.quantity }} ฿</td>
+                    <td>
+                        <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn btn-sm btn-danger">ลบ</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- รวมราคาทั้งหมด -->
+    <div class="text-end mt-4">
+        <h4>รวมทั้งหมด: <span class="text-danger fw-bold">{{ total_price }} ฿</span></h4>
+        <a href="/" class="btn btn-outline-primary">เลือกสินค้าต่อ</a>
+        <a href="/checkout" class="btn btn-success">สั่งซื้อสินค้า</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "layout.html"%}
+
+{% block content %}
+
+  <ul class="nav nav-pills nav-fill">
+  <li class="nav-item">
+    <a class="nav-link" href="\home">ทั้งหมด</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="\homeEquipment">เครื่องมือ</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="\homeled">หลอดไฟ</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="\homeElectronic">อุปกรณ์ไฟฟ้า</a>
+  </li>
+</ul>
+
+<div class="product-container"> 
+  <!----------------------------------------------------->
+  {% for m in catalog %}
+
+  
+    <div class="col-md-3" >
+    <img src="{{ m[4] }}" class="card-img-top" style="height:300px;object-fit:cover;">
+    
+    <div class="product-info">
+      <h4>{{ m[6] }}</h4>
+      <h3>{{ m[2] }}</h3>
+      <p>{{ m[5] }}</p>
+
+      <div>
+        <span class="price">{{ m[3] }}฿</span>
+      </div>
+
+      <div class="extra-info">
+        <span>ส่งฟรี 3-5 ชม.</span>
+      </div>
+    </div>
+
+    <a href="#" class="buy-btn">ซื้อเลย</a>
+  </div>
+  {% endfor %}
+    <!----------------------------------------------------->
+</div>
+</div>
+
+
+
+
+
+{% endblock%}
