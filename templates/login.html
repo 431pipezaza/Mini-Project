@@ -9,7 +9,7 @@
       <p class="text-muted">กรอกอีเมลและรหัสผ่านของคุณ</p>
     </div>
 
-    <form action="/login" method="POST" enctype="multipart/form-data">
+    <form action="/submit_login" method="POST" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="email" class="form-label">อีเมล</label>
         <input type="email" class="form-control" id="email" placeholder="name@example.com" name="ACTOR_Email" required>
@@ -19,6 +19,12 @@
         <label for="password" class="form-label">รหัสผ่าน</label>
         <input type="password" class="form-control" id="password" placeholder="••••••••" name="ACTOR_Password" required>
       </div>
+      div class="mb-2">
+      <select name="ACTOR_Role" class="form-select">
+        <option value="Customer">ลูกค้า</option>
+        <option value="Admin">แอดมิน</option>
+      </select>
+    </div>
 
       <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="#" class="text-decoration-none small text-primary">ลืมรหัสผ่าน?</a>
