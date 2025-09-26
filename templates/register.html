@@ -5,11 +5,15 @@
   <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
     <div class="text-center mb-4">
       <i class="fas fa-user-circle fa-4x text-primary"></i>
-      <h2 class="mt-2">เข้าสู่ระบบ</h2>
+      <h2 class="mt-2">สมัครสมาชิก</h2>
       <p class="text-muted">กรอกอีเมลและรหัสผ่านของคุณ</p>
     </div>
 
-    <form action="/login" method="POST" enctype="multipart/form-data">
+    <form action="/submit_register" method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+        <label for="text" class="form-label">ชื่อ</label>
+        <input type="text" class="form-control" id="username" placeholder="ชื่อ" name="ACTOR_Username" required>
+      </div>
       <div class="mb-3">
         <label for="email" class="form-label">อีเมล</label>
         <input type="email" class="form-control" id="email" placeholder="name@example.com" name="ACTOR_Email" required>
@@ -19,6 +23,18 @@
         <label for="password" class="form-label">รหัสผ่าน</label>
         <input type="password" class="form-control" id="password" placeholder="••••••••" name="ACTOR_Password" required>
       </div>
+      <div class="mb-3">
+        <label for="tel" class="form-label">เบอร์โทร</label>
+        <input type="tel" class="form-control" id="tel" placeholder="เบอร์โทร" name="ACTOR_TELL" required>
+      </div>
+      
+      <div class="mb-2">
+      <select name="ACTOR_Role" class="form-select">
+        <option value="Customer">ลูกค้า</option>
+        <option value="Admin">แอดมิน</option>
+      </select>
+    </div>
+      
 
       <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="#" class="text-decoration-none small text-primary">ลืมรหัสผ่าน?</a>
@@ -29,11 +45,10 @@
 
     <hr class="my-4">
 
-    <div class="text-center">
-      <p class="small">ยังไม่มีบัญชี? 
-        <a href="/register" class="text-decoration-none text-success fw-bold">สมัครสมาชิก</a>
-      </p>
-    </div>
+
+
+
+    
   </div>
 </div>
 {% endblock %}

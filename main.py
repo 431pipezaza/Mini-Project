@@ -1,4 +1,4 @@
-from flask import Flask,render_template, redirect ,request,url_for
+from flask import Flask,render_template, redirect ,request,url_for, flash, session
 import sqlite3
 import os
 
@@ -121,10 +121,38 @@ def Home1():
 
 
 
+@app.route("/register")
+def register():
+    return render_template("register.html")                             
 
-@app.route('/login')
+
+
+
+@app.route('/login', methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        email = request.form['ACTOR_Email']
+        password = request.form['ACTOR_Password']
+
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM ACTOR WHERE ACTOR_Email = ? AND ACTOR_Password = ?", 
+                            (email, password)).fetchone()
+        conn.close()
+
+        if user:
+            session['user_id'] = user['ACTOR_ID']
+            session['email'] = user['ACTOR_Email']
+            flash("Login Success!", "success")
+            return redirect(url_for("/home"))
+        else:
+            flash("Invalid email or password", "danger")
+
     return render_template("login.html")
+
+
+
+
+
 
 @app.route('/insert_data')
 def insert_data():
@@ -164,6 +192,36 @@ def submit():
     conn.close()
 
     return redirect(url_for("insert_data"))
+
+
+
+@app.route("/submit_register", methods=["POST"])
+def submit_register():
+    ACTOR_Username = request.form['ACTOR_Username']
+    ACTOR_Email = request.form["ACTOR_Email"]
+    ACTOR_Password = request.form["ACTOR_Password"]
+    ACTOR_TELL = request.form["ACTOR_TELL"]
+    ACTOR_Role = request.form['ACTOR_Role']
+    
+    
+
+
+    # บันทึกลง DB
+    conn = sqlite3.connect("ELEC_DB.db")
+    c = conn.cursor()
+    c.execute("INSERT INTO ACTOR (ACTOR_Username, ACTOR_Email, ACTOR_Password, ACTOR_Role, ACTOR_TELL) VALUES (?, ?,?, ?, ?)",
+              (ACTOR_Username, ACTOR_Email, ACTOR_Password, ACTOR_Role, ACTOR_TELL))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("register"))
+
+
+
+
+
+
+
 
 @app.route("/delete/<int:CATALOG_ID>")
 def delete(CATALOG_ID):
