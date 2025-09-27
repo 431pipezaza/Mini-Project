@@ -449,18 +449,20 @@
     
 <header class="navbar">
     <div class="navbar-left"> <!--Navด้านซ้าย-->
-        <a href="/home" style="text-decoration: none; border: none; background: none; font-size: 28px; color: #0044cc; font-weight: bold;">
+        <a href="/admin_home" style="text-decoration: none; border: none; background: none; font-size: 28px; color: #0044cc; font-weight: bold;">
     คลังไฟฟ้า</a>
         
     </div>
+    <form action="{{ url_for('search') }}" method="GET" class="d-flex">
     <div class="navbar-center"> <!--เสิร์สบาร์-->
         <div class="search-bar">
-            <input type="text" placeholder="ค้นหาสินค้า, แบรนด์, รุ่น"> <!--ข้อความบางๆด้านในSearch bar-->
+            <input type="text" name = "search"  placeholder="ค้นหาสินค้า"> <!--ข้อความบางๆด้านในSearch bar-->
             <button class="search-button">
                 <i class="fas fa-search"></i> ค้นหา
             </button>
         </div>
     </div>
+    </form>
     <div class="navbar-right"> <!--Navด้านขวา-->
         <div class="lang-selector">
             <i class="fas fa-globe"></i> ไทย
@@ -468,19 +470,26 @@
         </div>
         <div class="icons">
             <a href="#"><i class="fas fa-heart"></i></a>
-            <a href="/basket"><i class="fas fa-shopping-cart"></i></a>
-            <a href="/login"><i class="fas fa-user-circle"></i></a>
+            <a href="/cart"><i class="fas fa-shopping-cart"></i></a>
+            <a href="/"><i class="fas fa-user-circle"></i></a>
         </div>
         
     </div>
 </header>
 
 <div class="secondary-navbar">
-    <a href="/home">สินค้า</a> <!--หน้าHome-->
-    <a href="/about">เกี่ยวกับเรา</a>
-    <a href="/review">รีวิวสินค้า</a>
-    <a href="/insert_data">เพิ่มสินค้า</a>
+    <a href="/admin_home">สินค้า</a> <!--หน้าHome-->
+    <a href="/admin_about">เกี่ยวกับเรา</a>
+    <a href="/admin_review">รีวิวสินค้า</a>
+    <a href="/admin_insert_data">เพิ่มสินค้า</a>
 </div>
+
+
+
+
+
+
+
 
 {% block content %}
  

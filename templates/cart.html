@@ -1,0 +1,49 @@
+{% extends "admin_layout.html"%}
+
+{% block content %}
+
+
+<table class="table table-bordered table-striped text-center align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Price (฿)</th>
+      <th>Brand</th>
+      <th>Detail</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in CART %}
+    <tr>
+      <!-- CART schema: [CART_ID, CART_Name, CART_Price, CART_Detail, CART_Brand] -->
+      <td>{{ item[1] }}</td>   <!-- Name -->
+      <td>{{ item[2] }}</td>   <!-- Price -->
+      <td>{{ item[4] }}</td>   <!-- Brand -->
+      <td>{{ item[3] }}</td>   <!-- Detail -->
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<div class="text-end mt-3 mb-4">
+  <h4 style="text-align: center;">ราคารวมทั้งหมด: {{ total_price }} ฿</h4>
+</div>
+
+
+<div class="d-flex justify-content-center" >
+
+  <a href="/" class="btn btn-outline-primary">
+    เลือกสินค้าต่อ
+  </a>
+
+
+  <a href="" class="btn btn-success">
+    สั่งซื้อ
+  </a>
+</div>
+
+
+
+{% endblock%}

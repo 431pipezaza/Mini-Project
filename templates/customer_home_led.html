@@ -1,25 +1,25 @@
-{% extends "layout.html"%}
+{% extends "customer_layout.html"%}
 
 {% block content %}
 
-  <ul class="nav nav-pills nav-fill">
+<ul class="nav nav-pills nav-fill">
   <li class="nav-item">
-    <a class="nav-link" href="\home">ทั้งหมด</a>
+    <a class="nav-link" href="\customer_home">ทั้งหมด</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="\homeEquipment">เครื่องมือ</a>
+    <a class="nav-link" href="\customer_home_equipment">เครื่องมือ</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="\homeled">หลอดไฟ</a>
+    <a class="nav-link" href="\customer_home_led">หลอดไฟ</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="\homeElectronic">อุปกรณ์ไฟฟ้า</a>
+    <a class="nav-link" href="\customer_home_electronic">อุปกรณ์ไฟฟ้า</a>
   </li>
 </ul>
 
 <div class="product-container"> 
   <!----------------------------------------------------->
-  {% for m in catalog %}
+  {% for m in led %}
 
   
     <div class="col-md-3" >
