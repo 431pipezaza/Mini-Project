@@ -30,42 +30,76 @@ def register():
                            
 
 
+
 @app.route("/submit_register", methods=["POST"])
 def submit_register():
-    ACTOR_Username = request.form['ACTOR_Username']
-    ACTOR_Email = request.form["ACTOR_Email"]
-    ACTOR_Password = request.form["ACTOR_Password"]
-    ACTOR_TELL = request.form["ACTOR_TELL"]
-    ACTOR_Role = request.form['ACTOR_Role']
+    username = request.form['ACTOR_Username']
+    email = request.form['ACTOR_Email']
+    password = request.form['ACTOR_Password']
+    tell = request.form['ACTOR_TELL']
+    role = request.form['ACTOR_Role'] 
 
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
-    c.execute("INSERT INTO ACTOR (ACTOR_Username, ACTOR_Email, ACTOR_Password, ACTOR_Role, ACTOR_TELL) VALUES (?, ?,?, ?, ?)",
-              (ACTOR_Username, ACTOR_Email, ACTOR_Password, ACTOR_Role, ACTOR_TELL))
+
+    # ตรวจสอบ email ซ้ำ
+    if role == "Admin":
+        c.execute("SELECT * FROM ADMIN WHERE ADMIN_Email=?", (email,))
+        if c.fetchone():
+            conn.close()
+            flash("Email นี้มีผู้ใช้แล้ว", "danger")
+            return redirect(url_for("register"))
+        
+        else: c.execute("INSERT INTO ADMIN (ADMIN_Username, ADMIN_Email, ADMIN_Password, ADMIN_TELL, ADMIN_Role) VALUES (?, ?, ?, ?, ?)",
+                  (username, email, password, tell, role))
+    if role == "Customer":
+        c.execute("SELECT * FROM CUSTOMER WHERE CUSTOMER_Email=?", (email,))
+        if c.fetchone():
+            conn.close()
+            flash("Email นี้มีผู้ใช้แล้ว", "danger")
+            return redirect(url_for("register"))
+        else: c.execute("INSERT INTO CUSTOMER (CUSTOMER_Username, CUSTOMER_Email, CUSTOMER_Password, CUSTOMER_TELL, CUSTOMER_Role) VALUES (?, ?, ?, ?, ?)",
+                  (username, email, password, tell, role))
+
     conn.commit()
     conn.close()
+    flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
+    return redirect(url_for("login"))
 
-    return redirect(url_for("register"))
+
+
 
 @app.route('/submit_login', methods=["POST"])
 def submit_login():
     email = request.form["ACTOR_Email"]
     password = request.form["ACTOR_Password"]
-    role = request.form["ACTOR_Role"]
+    role = request.form["ACTOR_Role"] 
 
     conn = sqlite3.connect("ELEC_DB.db")
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    c.execute("SELECT * FROM ACTOR WHERE ACTOR_Email=? AND ACTOR_Password=? AND ACTOR_Role=?" , (email, password, role))
-    user = c.fetchone()
-    conn.close()
-    if user:
-        if role == "Admin":
+
+    user = None
+
+    if role == "Admin":
+        c.execute("SELECT * FROM ADMIN WHERE ADMIN_Email=? AND ADMIN_Password=?", (email, password))
+        user = c.fetchone()
+        if user:
+            session['admin_id'] = user['ADMIN_ID']
+            conn.close()
             return redirect(url_for("admin_home"))
-        elif role == "Customer":
+
+    elif role == "Customer":
+        c.execute("SELECT * FROM CUSTOMER WHERE CUSTOMER_Email=? AND CUSTOMER_Password=?", (email, password))
+        user = c.fetchone()
+        if user:
+            session['customer_id'] = user['CUSTOMER_ID']
+            conn.close()
             return redirect(url_for("customer_home"))
-    else:
-        return redirect(url_for("login"))
+
+    conn.close()
+    return redirect(url_for("login"))
+
 
 @app.route("/search")
 def search():
@@ -240,7 +274,20 @@ def admin_review():
 
 @app.route('/admin_profile')
 def admin_profile():
-    return render_template("profile.html")
+    if 'admin_id' not in session:
+        return redirect(url_for('login'))
+
+    admin_id = session['admin_id']
+
+    conn = sqlite3.connect("ELEC_DB.db")
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT * FROM ADMIN WHERE ADMIN_ID = ?", (admin_id,))
+    admin = c.fetchone()
+    conn.close()
+
+    return render_template("admin_profile.html", admin=admin)
+
 
 
 
@@ -305,6 +352,52 @@ def customer_home():
 @app.route('/customer_review')
 def customer_review():
     return render_template("customer_review.html")
+
+
+@app.route('/customer_profile')
+def customer_profile():
+    if 'customer_id' not in session:
+        return redirect(url_for('login'))
+
+    customer_id = session['customer_id']
+    with sqlite3.connect("ELEC_DB.db") as conn:
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = ?", (customer_id,))
+        customer = c.fetchone()
+
+    return render_template("customer_profile.html", customer=customer)
+
+
+
+
+
+
+@app.route("/update_profile", methods=["POST"])
+def update_profile():
+    user_id = request.form["user_id"]
+    username = request.form["username"]
+    email = request.form["email"]
+    tell = request.form["tell"]
+    password = request.form.get("password") 
+
+    role = "Admin" if "admin_id" in session else "Customer"
+    table = "ADMIN" if role == "Admin" else "CUSTOMER"
+    id_field = "ADMIN_ID" if role == "Admin" else "CUSTOMER_ID"
+
+    with sqlite3.connect("ELEC_DB.db") as conn:
+        c = conn.cursor()
+        if password:  # ถ้าใส่ password ใหม่
+            c.execute(f"UPDATE {table} SET {table}_Username=?, {table}_Email=?, {table}_TELL=?, {table}_Password=? WHERE {id_field}=?",
+                      (username, email, tell, password, user_id))
+        else:
+            c.execute(f"UPDATE {table} SET {table}_Username=?, {table}_Email=?, {table}_TELL=? WHERE {id_field}=?",
+                      (username, email, tell, user_id))
+        conn.commit()
+
+    flash("แก้ไขข้อมูลสำเร็จ", "success")
+    return redirect(url_for("admin_profile") if role=="Admin" else url_for("customer_profile"))
+
 
 
 

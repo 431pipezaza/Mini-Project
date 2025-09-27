@@ -1,0 +1,24 @@
+{% extends "admin_layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">โปรไฟล์ผู้ดูแลระบบ</h2>
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <div class="text-center mb-3">
+                <img src="https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2558760599.jpg" 
+                     class="rounded-circle" style="width: 120px;">
+            </div>
+            <h4 class="card-title text-center">{{ admin['ADMIN_Username'] }}</h4>
+            <hr>
+            <p><strong>Email:</strong> {{ admin['ADMIN_Email'] }}</p>
+            <p><strong>เบอร์โทร:</strong> {{ admin['ADMIN_TELL'] }}</p>
+            <p><strong>Role:</strong> {{ admin['ADMIN_Role'] }}</p>
+            <div class="text-center mt-4">
+                <a href="/update_profile" class="btn btn-primary">แก้ไขข้อมูล</a>
+                <a href="/" class="btn btn-danger">ออกจากระบบ</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
