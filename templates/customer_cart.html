@@ -1,4 +1,4 @@
-{% extends "admin_layout.html"%}
+{% extends "customer_layout.html"%}
 
 {% block content %}
 
@@ -16,11 +16,11 @@
   <tbody>
     {% for item in CART %}
     <tr>
-      <!-- CART schema: [CART_ID, CART_Name, CART_Price, CART_Detail, CART_Brand] -->
-      <td>{{ item[1] }}</td>   <!-- Name -->
-      <td>{{ item[2] }}</td>   <!-- Price -->
-      <td>{{ item[4] }}</td>   <!-- Brand -->
-      <td>{{ item[3] }}</td>   <!-- Detail -->
+      
+      <td>{{ item[1] }}</td>  
+      <td>{{ item[2] }}</td>   
+      <td>{{ item[4] }}</td>   
+      <td>{{ item[3] }}</td>  
     </tr>
     {% endfor %}
   </tbody>

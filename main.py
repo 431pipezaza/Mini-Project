@@ -2,7 +2,6 @@ from flask import Flask,render_template, redirect ,request,url_for, flash, sessi
 import sqlite3
 import os
 
-
 app = Flask(__name__)
 
 app.secret_key = "9f1c3c27a08f2e4ab1c25c9278d5c1b2"
@@ -27,9 +26,6 @@ def register():
     return render_template("register.html")   
 
 
-                           
-
-
 
 @app.route("/submit_register", methods=["POST"])
 def submit_register():
@@ -42,7 +38,7 @@ def submit_register():
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
 
-    # ตรวจสอบ email ซ้ำ
+
     if role == "Admin":
         c.execute("SELECT * FROM ADMIN WHERE ADMIN_Email=?", (email,))
         if c.fetchone():
@@ -162,15 +158,15 @@ def submit_cart():
 
     return redirect(url_for('cart'))
 
-@app.route('/cart')
-def cart():
+@app.route('/admin_cart')
+def admin_cart():
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
     c.execute("SELECT * FROM CART")
     CART = conn.execute("SELECT * FROM CART").fetchall()
     total_price = sum(float(CART[2]) for CARTS in CART)
     conn.close()
-    return render_template("cart.html", CART = CART,total_price=total_price)
+    return render_template("admin_cart.html", CART = CART,total_price=total_price)
 
 
 
@@ -387,7 +383,7 @@ def update_profile():
 
     with sqlite3.connect("ELEC_DB.db") as conn:
         c = conn.cursor()
-        if password:  # ถ้าใส่ password ใหม่
+        if password:
             c.execute(f"UPDATE {table} SET {table}_Username=?, {table}_Email=?, {table}_TELL=?, {table}_Password=? WHERE {id_field}=?",
                       (username, email, tell, password, user_id))
         else:
@@ -400,6 +396,15 @@ def update_profile():
 
 
 
+@app.route('/customer_cart')
+def customer_cart():
+    conn = sqlite3.connect("ELEC_DB.db")
+    c = conn.cursor()
+    c.execute("SELECT * FROM CART")
+    CART = conn.execute("SELECT * FROM CART").fetchall()
+    total_price = sum(float(CART[2]) for CARTS in CART)
+    conn.close()
+    return render_template("customer_cart.html", CART = CART,total_price=total_price)
 
 
 
