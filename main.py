@@ -218,7 +218,7 @@ def delete(CATALOG_ID):
     c.execute("DELETE FROM CATALOG WHERE CATALOG_ID=?", (CATALOG_ID,))
     conn.commit()
     conn.close()
-    return redirect(url_for("insert_data"))
+    return redirect(url_for("admin_insert_data"))
 
 
 
@@ -338,7 +338,8 @@ def customer_home_led():
     conn.close()
     return render_template("customer_home_led.html", catalog = catalog, Equipment=Equipment, led=led, Electronic=Electronic)
 
-@app.route('/homeEquipment')
+
+@app.route('/customer_home_equipment')
 def customer_home_equipment():
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
@@ -386,67 +387,6 @@ def customer_profile():
 
 
 
-@app.route("/update_profile", methods=["POST"])
-def update_profile():
-    user_id = request.form["user_id"]
-    username = request.form["username"]
-    email = request.form["email"]
-    tell = request.form["tell"]
-    password = request.form.get("password") 
-
-    role = "Admin" if "admin_id" in session else "Customer"
-    table = "ADMIN" if role == "Admin" else "CUSTOMER"
-    id_field = "ADMIN_ID" if role == "Admin" else "CUSTOMER_ID"
-
-    with sqlite3.connect("ELEC_DB.db") as conn:
-        c = conn.cursor()
-
-        # ✅ ตรวจสอบ email ซ้ำ (ยกเว้นของตัวเอง)
-        c.execute(f"SELECT 1 FROM {table} WHERE {table}_Email=? AND {id_field}!=?", (email, user_id))
-        if c.fetchone():
-            flash("อีเมลนี้ถูกใช้แล้ว", "danger")
-            return redirect(url_for("admin_profile") if role=="Admin" else url_for("customer_profile"))
-
-        # ✅ update
-        if password:
-            c.execute(f"""
-                UPDATE {table} 
-                SET {table}_Username=?, {table}_Email=?, {table}_TELL=?, {table}_Password=? 
-                WHERE {id_field}=?
-            """, (username, email, tell, password, user_id))
-        else:
-            c.execute(f"""
-                UPDATE {table} 
-                SET {table}_Username=?, {table}_Email=?, {table}_TELL=? 
-                WHERE {id_field}=?
-            """, (username, email, tell, user_id))
-
-        conn.commit()
-
-    flash("แก้ไขข้อมูลสำเร็จ", "success")
-    return redirect(url_for("admin_profile") if role=="Admin" else url_for("customer_profile"))
-
-
-
-@app.route("/edit_profile", methods=["GET"])
-def edit_profile():
-    if "admin_id" in session:
-        table, id_field, user_id = "ADMIN", "ADMIN_ID", session["admin_id"]
-    elif "customer_id" in session:
-        table, id_field, user_id = "CUSTOMER", "CUSTOMER_ID", session["customer_id"]
-    else:
-        flash("กรุณาเข้าสู่ระบบก่อน", "danger")
-        return redirect(url_for("login"))
-
-    with sqlite3.connect("ELEC_DB.db") as conn:
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        c.execute(f"SELECT {id_field} as ID, {table}_Username as Username, {table}_Email as Email, {table}_TELL as TELL, {table}_Role as Role FROM {table} WHERE {id_field}=?", (user_id,))
-        user = c.fetchone()
-
-    return render_template("edit_profile.html", user=user)
-
-
 
 
 
@@ -485,6 +425,8 @@ def delete_cart(cart_id):
     conn.close()
 
     return redirect(url_for("customer_cart"))
+
+
 
 
 

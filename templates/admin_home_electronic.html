@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<ul class="nav nav-pills nav-fill">
+  <ul class="nav nav-pills nav-fill">
   <li class="nav-item">
     <a class="nav-link" href="\admin_home">ทั้งหมด</a>
   </li>
@@ -18,34 +18,29 @@
 </ul>
 
 <div class="product-container"> 
-  <!----------------------------------------------------->
-  {% for m in Electronic %}
 
-  
-    <div class="col-md-3" >
-    <img src="{{ m[4] }}" class="card-img-top" style="height:300px;object-fit:cover;">
-    
-    <div class="product-info">
-      <h4>{{ m[6] }}</h4>
-      <h3>{{ m[2] }}</h3>
-      <p>{{ m[5] }}</p>
 
-      <div>
-        <span class="price">{{ m[3] }}฿</span>
+
+
+
+<div class="container">
+  <div class="row justify-content-start">
+    {% for m in Electronic %}
+      <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="{{ m[4] }}" class="card-img-top" style="height:200px; object-fit:cover;">
+          <div class="card-body">
+            <h6 class="card-subtitle text-muted mb-1">{{ m[6] }}</h6>
+            <h5 class="card-title">{{ m[2] }}</h5>
+            <p class="card-text">{{ m[5] }}</p>
+            <div class="text-muted">ราคา: <strong>{{ m[3] }}฿</strong></div>
+            <small class="text-success">ส่งฟรี 3-5 ชม.</small>
+          </div>
+        </div>
       </div>
-
-      <div class="extra-info">
-        <span>ส่งฟรี 3-5 ชม.</span>
-      </div>
-    </div>
-
-    <a href="#" class="buy-btn">ซื้อเลย</a>
+    {% endfor %}
   </div>
-  {% endfor %}
-    <!----------------------------------------------------->
 </div>
-</div>
-
 
 
 
