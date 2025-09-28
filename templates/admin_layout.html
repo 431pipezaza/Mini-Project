@@ -453,7 +453,7 @@
     คลังไฟฟ้า</a>
         
     </div>
-    <form action="{{ url_for('search') }}" method="GET" class="d-flex">
+    <form action="{{ url_for('admin_search') }}" method="GET" class="d-flex">
     <div class="navbar-center"> <!--เสิร์สบาร์-->
         <div class="search-bar">
             <input type="text" name = "search"  placeholder="ค้นหาสินค้า"> <!--ข้อความบางๆด้านในSearch bar-->
@@ -469,7 +469,6 @@
             <i class="fas fa-chevron-down"></i>
         </div>
         <div class="icons">
-            <a href="/admin_cart"><i class="fas fa-shopping-cart"></i></a>
             <a href="/admin_profile"><i class="fas fa-user-circle"></i></a>
         </div>
         

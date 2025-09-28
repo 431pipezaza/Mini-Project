@@ -10,6 +10,7 @@
       <th>Price (฿)</th>
       <th>Brand</th>
       <th>Detail</th>
+      <th>Delete</th>
 
     </tr>
   </thead>
@@ -17,10 +18,17 @@
     {% for item in CART %}
     <tr>
       
-      <td>{{ item[1] }}</td>  
-      <td>{{ item[2] }}</td>   
-      <td>{{ item[4] }}</td>   
-      <td>{{ item[3] }}</td>  
+      <td>{{ item[1] }}</td>
+      <td>{{ item[2] }}</td>
+      <td>{{ item[4] }}</td>
+      <td>{{ item[3] }}</td>
+      <td>
+        <a href="{{ url_for('delete_cart', cart_id=item[0]) }}" 
+           class="btn btn-danger btn-sm"
+           onclick="return confirm('คุณต้องการลบสินค้านี้หรือไม่?');">
+           ลบ
+        </a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
