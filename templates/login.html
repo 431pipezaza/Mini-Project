@@ -1,6 +1,27 @@
 {% extends "login_layout.html" %}
 
 {% block content %}
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-danger mt-2" style="display: flex; justify-content: center; align-items: center;">
+  อีเมลหรือรหัสผ่านสำหรับแอดมินไม่ถูกต้อง
+</div>
+
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<style>
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* สูงเต็มหน้าจอ */
+  }
+</style>
 <div class="d-flex justify-content-center align-items-center vh-100">
   <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
     <div class="text-center mb-4">
@@ -43,13 +64,7 @@
   </div>
 </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+
 
 
 {% endblock %}

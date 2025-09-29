@@ -84,6 +84,8 @@ def submit_login():
             session['admin_id'] = user['ADMIN_ID']
             conn.close()
             return redirect(url_for("admin_home"))
+        else:
+            flash("อีเมลหรือรหัสผ่านสำหรับแอดมินไม่ถูกต้อง", "danger")
 
     elif role == "Customer":
         c.execute("SELECT * FROM CUSTOMER WHERE CUSTOMER_Email=? AND CUSTOMER_Password=?", (email, password))
@@ -92,6 +94,8 @@ def submit_login():
             session['customer_id'] = user['CUSTOMER_ID']
             conn.close()
             return redirect(url_for("customer_home"))
+        else:
+            flash("อีเมลหรือรหัสผ่านสำหรับแอดมินไม่ถูกต้อง", "danger")
 
     conn.close()
     return redirect(url_for("login"))
