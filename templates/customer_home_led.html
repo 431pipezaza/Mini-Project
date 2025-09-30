@@ -17,6 +17,7 @@
   </li>
 </ul>
 
+
 <div class="product-container"> 
 
 
@@ -40,29 +41,52 @@
       <div>
         <span class="price">{{ m[3] }}฿</span>
       </div>
+      <h3>จำนวนสินค้าที่เหลือ: {{ m[7] }}</h3>
 
       <div class="extra-info">
         <span>ส่งฟรี 3-5 ชม.</span>
       </div>
+      
+      
+    <form action="/submit_cart" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="CART_Name" value="{{ m[2] }}"> 
+    <input type="hidden" name="CART_Price" value="{{ m[3] }}">
+    <input type="hidden" name="CART_Detail" value="{{ m[5] }}">
+    <input type="hidden" name="CART_Brand" value="{{ m[6] }}">
+    <input type="hidden" name="CATALOG_ID" value="{{ m[0] }}"> 
+    <div class="quantity-control" style="margin: 10px 0;">
+      <button type="button" class="qty-btn" onclick="decreaseQty(this)">−</button>
+      <input type="number" name="CART_Quantity" value="1" min="1" style="width: 50px; text-align:center;">
+      <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
     </div>
-<form action="/submit_cart" method="POST" enctype="multipart/form-data">
-  <input type="hidden" name="CART_Name" value="{{ m[2] }}"> 
-  <input type="hidden" name="CART_Price" value="{{ m[3] }}">
-  <input type="hidden" name="CART_Detail" value="{{ m[5] }}">
-  <input type="hidden" name="CART_Brand" value="{{ m[6] }}">
+
     <button type="submit" class="buy-btn">ซื้อเลย</button>
-  </div>
-</form>
+    </form>
+</div>
+</div>
+
   {% endfor %}
     <!----------------------------------------------------->
-
-
-
-</div>
 </div>
 
 
 
+
+
+
+<script>
+  function increaseQty(btn) {
+    const input = btn.parentElement.querySelector('input[type="number"]');
+    input.value = parseInt(input.value) + 1;
+  }
+
+  function decreaseQty(btn) {
+    const input = btn.parentElement.querySelector('input[type="number"]');
+    if (parseInt(input.value) > 1) {
+      input.value = parseInt(input.value) - 1;
+    }
+  }
+</script>
 
 
 {% endblock%}

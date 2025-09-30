@@ -11,6 +11,7 @@
       <th>Brand</th>
       <th>Detail</th>
       <th>Delete</th>
+      <th>Number</th>
 
     </tr>
   </thead>
@@ -29,6 +30,20 @@
            ลบ
         </a>
       </td>
+      
+     <td>
+  <div class="d-flex justify-content-center align-items-center">
+    <a href="{{ url_for('update_cart_quantity', cart_id=item[0], action='decrease') }}"
+       class="btn btn-sm btn-outline-danger me-2">−</a>
+
+    <span>{{ item[7] }}</span>
+
+    <a href="{{ url_for('update_cart_quantity', cart_id=item[0], action='increase') }}"
+       class="btn btn-sm btn-outline-success ms-2">+</a>
+  </div>
+</td>
+
+      
     </tr>
     {% endfor %}
   </tbody>
@@ -47,9 +62,9 @@
   </a>
 
 
-  <a href="" class="btn btn-success">
-    สั่งซื้อ
-  </a>
+  <a href="{{ url_for('checkout_cart') }}" class="btn btn-success">
+  สั่งซื้อ
+</a>
 </div>
 
 

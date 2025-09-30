@@ -43,7 +43,7 @@ def submit_register():
         c.execute("SELECT * FROM ADMIN WHERE ADMIN_Email=?", (email,))
         if c.fetchone():
             conn.close()
-            flash("Email นี้มีผู้ใช้แล้ว", "danger")
+          
             return redirect(url_for("register"))
         
         else: c.execute("INSERT INTO ADMIN (ADMIN_Username, ADMIN_Email, ADMIN_Password, ADMIN_TELL, ADMIN_Role) VALUES (?, ?, ?, ?, ?)",
@@ -52,14 +52,14 @@ def submit_register():
         c.execute("SELECT * FROM CUSTOMER WHERE CUSTOMER_Email=?", (email,))
         if c.fetchone():
             conn.close()
-            flash("Email นี้มีผู้ใช้แล้ว", "danger")
+      
             return redirect(url_for("register"))
         else: c.execute("INSERT INTO CUSTOMER (CUSTOMER_Username, CUSTOMER_Email, CUSTOMER_Password, CUSTOMER_TELL, CUSTOMER_Role) VALUES (?, ?, ?, ?, ?)",
                   (username, email, password, tell, role))
 
     conn.commit()
     conn.close()
-    flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
+   
     return redirect(url_for("login"))
 
 
@@ -95,7 +95,7 @@ def submit_login():
             conn.close()
             return redirect(url_for("customer_home"))
         else:
-            flash("อีเมลหรือรหัสผ่านสำหรับแอดมินไม่ถูกต้อง", "danger")
+            flash("อีเมลหรือรหัสผ่านสำหรับลูกค้าไม่ถูกต้อง", "danger")
 
     conn.close()
     return redirect(url_for("login"))
@@ -146,6 +146,7 @@ def submit():
     CATALOG_Brand = request.form["CATALOG_Brand"]
     CATALOG_Detail = request.form["CATALOG_Detail"]
     CATALOG_Price = request.form['CATALOG_Price']
+    CATALOG_Number = request.form['CATALOG_Number']
     TYPE_FK = request.form['TYPE_FK']
  
     file = request.files['CATALOG_Image']
@@ -156,8 +157,8 @@ def submit():
 
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
-    c.execute("INSERT INTO CATALOG (TYPE_FK, CATALOG_Name, CATALOG_Price, CATALOG_Image, CATALOG_Detail, CATALOG_Brand) VALUES (?, ?, ?, ?, ?, ?)",
-              (TYPE_FK, CATALOG_Name, CATALOG_Price, filename, CATALOG_Detail, CATALOG_Brand))
+    c.execute("INSERT INTO CATALOG (TYPE_FK, CATALOG_Name, CATALOG_Price, CATALOG_Image, CATALOG_Detail, CATALOG_Brand, CATALOG_Number) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              (TYPE_FK, CATALOG_Name, CATALOG_Price, filename, CATALOG_Detail, CATALOG_Brand,CATALOG_Number))
     conn.commit()
     conn.close()
 
@@ -171,18 +172,21 @@ def submit_cart():
         return redirect(url_for("login"))
 
     customer_id = session['customer_id']
-
+    CATALOG_ID = request.form['CATALOG_ID']
     CART_Name = request.form['CART_Name']
     CART_Price = request.form['CART_Price']
     CART_Detail = request.form['CART_Detail']
     CART_Brand = request.form['CART_Brand']
+    CART_Quantity = int(request.form.get('CART_Quantity', 1))
 
     conn = sqlite3.connect("ELEC_DB.db")
     c = conn.cursor()
     c.execute(
-        "INSERT INTO CART (CART_Name, CART_Price, CART_Detail, CART_Brand, CUSTOMER_ID) VALUES (?, ?, ?, ?, ?)",
-        (CART_Name, CART_Price, CART_Detail, CART_Brand, customer_id)
-    )
+    "INSERT INTO CART (CART_Name, CART_Price, CART_Detail, CART_Brand, CUSTOMER_ID, CART_Quantity, CATALOG_ID) VALUES (?, ?, ?,?, ?, ?, ?)",
+    (CART_Name, CART_Price, CART_Detail, CART_Brand, customer_id, CART_Quantity,CATALOG_ID)
+)
+
+
     conn.commit()
     conn.close()
 
@@ -408,7 +412,8 @@ def customer_cart():
     cart_items = c.fetchall()
     conn.close()
 
-    total_price = sum(float(item["CART_Price"]) for item in cart_items)
+    total_price = sum(float(item["CART_Price"]) * item["CART_Quantity"] for item in cart_items)
+
     return render_template("customer_cart.html", CART=cart_items, total_price=total_price)
 
 
@@ -431,6 +436,82 @@ def delete_cart(cart_id):
     return redirect(url_for("customer_cart"))
 
 
+@app.route("/checkout_cart")
+def checkout_cart():
+    if "customer_id" not in session:
+        flash("กรุณาเข้าสู่ระบบก่อน", "danger")
+        return redirect(url_for("login"))
+
+    customer_id = session["customer_id"]
+
+    with sqlite3.connect("ELEC_DB.db") as conn:
+        c = conn.cursor()
+
+      
+        c.execute("SELECT CATALOG_ID, CART_Quantity FROM CART WHERE CUSTOMER_ID=?", (customer_id,))
+        cart_items = c.fetchall()
+
+        for catalog_id, qty in cart_items:
+            # ตรวจสอบจำนวน stock ปัจจุบัน
+            c.execute("SELECT CATALOG_Number FROM CATALOG WHERE CATALOG_ID=?", (catalog_id,))
+            stock_row = c.fetchone()
+
+            if stock_row is None:
+                flash("ไม่พบข้อมูลสินค้าบางรายการ", "danger")
+                return redirect(url_for("customer_cart"))
+
+            stock = stock_row[0]
+
+            if stock >= qty:
+                # ลดจำนวนสินค้าในสต็อก
+                c.execute("""
+                    UPDATE CATALOG
+                    SET CATALOG_Number = CATALOG_Number - ?
+                    WHERE CATALOG_ID=?
+                """, (qty, catalog_id))
+            else:
+                flash("สินค้าบางรายการมีจำนวนไม่เพียงพอ", "danger")
+                return redirect(url_for("customer_cart"))
+
+        # ลบตะกร้าหลังสั่งซื้อสำเร็จ
+        c.execute("DELETE FROM CART WHERE CUSTOMER_ID=?", (customer_id,))
+        conn.commit()
+
+    return render_template("checkout_success.html")
+
+
+
+@app.route('/update_cart_quantity/<int:cart_id>/<action>')
+def update_cart_quantity(cart_id, action):
+    if 'customer_id' not in session:
+        return redirect(url_for('login'))
+
+    customer_id = session['customer_id']
+
+    with sqlite3.connect("ELEC_DB.db") as conn:
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        # ดึงจำนวนปัจจุบัน
+        c.execute("SELECT CART_Quantity FROM CART WHERE CART_ID=? AND CUSTOMER_ID=?", (cart_id, customer_id))
+        row = c.fetchone()
+
+        if row is None:
+            flash("ไม่พบสินค้าในตะกร้า", "danger")
+            return redirect(url_for('customer_cart'))
+
+        quantity = row['CART_Quantity']
+
+        # อัปเดตตาม action
+        if action == 'increase':
+            quantity += 1
+        elif action == 'decrease' and quantity > 1:
+            quantity -= 1
+
+        c.execute("UPDATE CART SET CART_Quantity=? WHERE CART_ID=? AND CUSTOMER_ID=?", (quantity, cart_id, customer_id))
+        conn.commit()
+
+    return redirect(url_for('customer_cart'))
 
 
 
